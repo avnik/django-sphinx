@@ -17,16 +17,16 @@ from django.template import RequestContext
 
 if 'coffin' in settings.INSTALLED_APPS:
     import jinja2
-    from coffin import shortcuts
+    from coffin.shortcuts import render_to_string as dj_render_to_string
 else:
-    from django import shortcuts
+    from django.template.loader import render_to_string as dj_render_to_string
     
 def render_to_string(template, context, request=None):
     if request:
         context_instance = RequestContext(request)
     else:
         context_instance = None
-    return shortcuts.render_to_string(template, context, context_instance)
+    return dj_render_to_string(template, context, context_instance)
 
 def relative_path(*args):
     return os.path.abspath(os.path.join(settings.SPHINX_ROOT, *args))

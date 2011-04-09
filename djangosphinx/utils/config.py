@@ -11,11 +11,18 @@ import djangosphinx.apis.current as sphinxapi
 __all__ = ('generate_config_for_model', 'generate_config_for_models')
 
 def _get_database_engine():
-    if settings.DATABASE_ENGINE == 'mysql':
-        return settings.DATABASE_ENGINE
-    elif settings.DATABASE_ENGINE.startswith('postgresql'):
+    if getattr(settings, 'DATABASES', None) is None:
+        engine = settings.DATABASE_ENGINE
+    else:
+        engine = settings.DATABASES['default']['ENGINE']
+    if '.' in engine:
+        engine = engine.rsplit('.', 1)[1]
+    if engine == 'mysql':
+        return engine 
+    elif engine.startswith('postgresql'):
         return 'pgsql'
-    raise ValueError, "Only MySQL and PostgreSQL engines are supported by Sphinx."
+    raise ValueError(
+        "Only MySQL and PostgreSQL engines are supported by Sphinx. %r" % (engine))
 
 def _get_template(name):
     paths = (

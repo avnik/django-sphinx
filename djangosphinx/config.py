@@ -53,4 +53,9 @@ else:
         'DATABASE_NAME': settings.DATABASE_NAME,
     })
 
-print render_to_string(getattr(settings, 'SPHINX_CONFIG_TEMPLATE', 'conf/sphinx.conf'), context)
+def main():
+    print render_to_string(getattr(settings, 
+        'SPHINX_CONFIG_TEMPLATE', 'conf/sphinx.conf'), context)
+
+if __name__ == '__main__':
+    main()

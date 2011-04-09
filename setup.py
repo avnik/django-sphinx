@@ -14,6 +14,10 @@ setup(
     description = 'An integration layer bringing Django and Sphinx Search together.',
     packages=find_packages(),
     include_package_data=True,
+    entry_points="""
+    [console_scripts]
+    django-sphinx-config=djangosphinx.config:main
+    """,
     classifiers=[
         "Framework :: Django",
         "Intended Audience :: Developers",

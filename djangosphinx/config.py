@@ -10,6 +10,7 @@ if not os.environ.get('DJANGO_SETTINGS_MODULE'):
     raise ValueError('`DJANGO_SETTINGS_MODULE` was not set. Please use DJANGO_SETTINGS_MODULE=project.settings <command> --config sphinx.py.')
 
 from django.conf import settings
+from djangosphinx.utils.config import DEFAULT_SPHINX_PARAMS
 
 assert getattr(settings, 'SPHINX_ROOT', None) is not None, "You must specify `SPHINX_ROOT` in your settings."
 
@@ -36,22 +37,16 @@ context = {
     'SPHINX_PORT': getattr(settings, 'SPHINX_PORT', '3312'),
     'relative_path': relative_path,
 }
-if getattr(settings, 'DATABASES', None):
-    context.update({
-        'DATABASE_HOST': settings.DATABASES['default']['HOST'],
-        'DATABASE_PASSWORD': settings.DATABASES['default']['PASSWORD'],
-        'DATABASE_USER': settings.DATABASES['default']['USER'],
-        'DATABASE_PORT': settings.DATABASES['default']['PORT'],
-        'DATABASE_NAME': settings.DATABASES['default']['NAME'],
-    })
-else:
-    context.update({
-        'DATABASE_HOST': settings.DATABASE_HOST,
-        'DATABASE_PASSWORD': settings.DATABASE_PASSWORD,
-        'DATABASE_USER': settings.DATABASE_USER,
-        'DATABASE_PORT': settings.DATABASE_PORT,
-        'DATABASE_NAME': settings.DATABASE_NAME,
-    })
+context.update(DEFAULT_SPHINX_PARAMS)
+
+# Old code works with uppercased params
+context.update({
+    'DATABASE_HOST': DEFAULT_SPHINX_PARAMS['database_host'],
+    'DATABASE_PASSWORD': DEFAULT_SPHINX_PARAMS['database_password'],
+    'DATABASE_USER': DEFAULT_SPHINX_PARAMS['database_user'],
+    'DATABASE_PORT': DEFAULT_SPHINX_PARAMS['database_port'],
+    'DATABASE_NAME': DEFAULT_SPHINX_PARAMS['database_name'],
+})
 
 def main():
     print render_to_string(getattr(settings, 

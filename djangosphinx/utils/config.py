@@ -10,11 +10,13 @@ import djangosphinx.apis.current as sphinxapi
 
 __all__ = ('generate_config_for_model', 'generate_config_for_models')
 
+def _get_database_value(param):
+    if hasattr(settings, 'DATABASES'):
+        return settings.DATABASES['default'][param]
+    return getattr(settings, 'DATABASE_'+param)
+
 def _get_database_engine():
-    if getattr(settings, 'DATABASES', None) is None:
-        engine = settings.DATABASE_ENGINE
-    else:
-        engine = settings.DATABASES['default']['ENGINE']
+    engine = _get_database_value('ENGINE')
     if '.' in engine:
         engine = engine.rsplit('.', 1)[1]
     if engine == 'mysql':
@@ -56,13 +58,15 @@ def _is_sourcable_field(field):
 # No trailing slashes on paths
 DEFAULT_SPHINX_PARAMS = {
     'database_engine': _get_database_engine(),
-    'database_host': settings.DATABASE_HOST,
-    'database_port': settings.DATABASE_PORT,
-    'database_name': settings.DATABASE_NAME,
-    'database_user': settings.DATABASE_USER,
-    'database_password': settings.DATABASE_PASSWORD,
-    'log_file': '/var/log/sphinx/searchd.log',
-    'data_path': '/var/data',
+    'database_host': _get_database_value('HOST'),
+    'database_port': _get_database_value('PORT'),
+    'database_name': _get_database_value('NAME'),
+    'database_user': _get_database_value('USER'),
+    'database_password': _get_database_value('PASSWORD'),
+    'log_file': getattr(settings, 'SPHINX_LOG','/var/log/sphinx/searchd.log'),
+    'querylog_file': 
+        getattr(settings, 'SPHINX_QUERY_LOG','/var/log/sphinx/query.log'),
+    'data_path': getattr(settings, 'SPHINX_DATA_PATH', '/var/data'),
 }
 
 def get_index_context(index):
